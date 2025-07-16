@@ -3,3 +3,5 @@ python-dotenv
 pytz
 openpyxl
 geopy
+requests
+smtplib
