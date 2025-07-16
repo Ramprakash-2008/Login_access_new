@@ -750,11 +750,14 @@ def login_user():
         location = "Unknown"
         if lat and lng:
             try:
-                geolocator = Nominatim(user_agent="location-logger")
-                location_data = geolocator.reverse(f"{lat},{lng}", timeout=10)
-                if location_data and location_data.address:
-                    location = location_data.address
+                url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lng}"
+                headers = {"User-Agent": "FlaskLoginTracker/1.0"}  # required by Nominatim
+                response = requests.get(url, headers=headers, timeout=10)
+                if response.status_code == 200:
+                    data = response.json()
+                    location = data.get("display_name", f"{lat},{lng}")
                 else:
+                    print(f"⚠️ Nominatim error {response.status_code}: {response.text}")
                     location = f"{lat},{lng}"
             except Exception as geo_err:
                 print("⚠️ Reverse geocoding failed:", geo_err)
