@@ -12,6 +12,7 @@ from flask import flash
 import logging
 import requests
 from geopy.geocoders import Nominatim
+from datetime import datetime
 load_dotenv()
 app = Flask(__name__)
 app.secret_key = "super_secret_key"
@@ -356,19 +357,24 @@ def download_excel():
 
 
 
+
 @app.route("/not-logged-in")
 def not_logged_in_users():
     if not session.get("logged_in"):
         return redirect("/admin/login")
 
+    today = datetime.now().strftime("%Y-%m-%d")
     today_users = set()
+
     if os.path.exists(LOG_FILE):
         with open(LOG_FILE) as f:
-            next(f)
+            next(f)  # Skip the header row
             for line in f:
                 parts = line.strip().split(',')
-                if len(parts) == 3:
-                    today_users.add(parts[0])
+                if len(parts) >= 4:
+                    username, _, _, log_date = parts[:4]
+                    if log_date == today:
+                        today_users.add(username)
 
     registered_users = set(get_users())
     not_logged_in = sorted(list(registered_users - today_users))
