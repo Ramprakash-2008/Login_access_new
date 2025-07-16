@@ -33,6 +33,12 @@ LOGIN_TEMPLATE = """
     <meta charset='UTF-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
     <title>Admin Login</title>
+    <script>
+     if (location.protocol !== 'https:') {
+       location.href = 'https:' + window.location.href.substring(window.location.protocol.length);   
+     }
+    </script>
+
     <style>
         body {
             background-color: #fafafa;
